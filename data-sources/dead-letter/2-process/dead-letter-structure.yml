@@ -1,0 +1,19 @@
+input {
+    pipeline {
+        address => "dead-letter-structure"
+    }
+}
+filter {
+}
+output {
+    elasticsearch {
+        id => "dead-letter-structure"
+        hosts => "elasticsearch.corp-intranet.com:9243"
+        user => "ABC"
+        password => "XYZ"
+        ssl => true
+        ssl_certificate_verification => true
+        cacert => "/etc/logstash/ca.crt"
+        index => "dead-letter-structure"
+    }
+}

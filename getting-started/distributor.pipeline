@@ -1,0 +1,32 @@
+input {
+  beats {
+    port => 5044
+  }
+}
+filter {
+    # Raw data filters go here.
+    # Filter out any data you don't want in the Data Lake or Elasticsearch.
+}
+output {
+    if "utilization" in [tags] {
+        pipeline {
+            send_to => ["utilization-archive", "utilization-structure"]
+        }
+    } else if [agent][type] == "filebeat" and [event][module] == "system" {
+        pipeline {
+            send_to => ["system-filebeat-module-archive", "system-filebeat-module-structure"]
+        }
+    } else if [agent][type] == "filebeat" and [event][module] == "haproxy" {
+        pipeline {
+            send_to => ["haproxy-filebeat-module-archive", "haproxy-filebeat-module-structure"]
+        }
+    } else if [agent][type] == "metricbeat" and [event][module] == "haproxy" {
+        pipeline {
+            send_to => ["haproxy-metricbeat-module-archive", "haproxy-metricbeat-module-structure"]
+        }
+    } else {
+        pipeline {
+            send_to => ["dead-letter-archive", "dead-letter-structure"]
+        }
+    }
+}
