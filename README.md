@@ -36,11 +36,11 @@ volume at the point of entry, into the Data Lake, and into Elastic.
 These measurements are often used to gauge the voluem of data the
 system is handling.
 
-Follow the [Getting Started](/getting-started) guide to get your
-Data Lake up and running.  It covers setting up Minio or leveraging
-a Cloud object store like AWS S3, Google Cloud Storage, or Microsoft
-Azure Storage.  There are also directions for configuring Logstash
-and HAProxy since they are key components in this architecture.
+Follow the [Setup](/setup) guide to get your Data Lake up and
+running.  It covers setting up Minio or leveraging a Cloud object
+store like AWS S3, Google Cloud Storage, or Microsoft Azure Storage.
+There are also directions for configuring Logstash and HAProxy since
+they are key components in this architecture.
 
 ## Onboarding Data
 

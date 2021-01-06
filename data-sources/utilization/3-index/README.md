@@ -29,30 +29,42 @@ We use a `strict` mapping.  Any changes requires re-indexing from the Data Lake.
 ```
 PUT _index_template/utilization
 {
-  "index_patterns": [
-    "utilization-*"
-  ],
   "template": {
     "settings": {
       "index": {
+        "lifecycle": {
+          "name": "utilization",
+          "rollover_alias": "utilization"
+        },
         "number_of_replicas": "1"
+      }
+    },
+    "aliases": {
+      "utilization": {
+        "is_write_index": true
       }
     },
     "mappings": {
       "dynamic": "strict",
-      "aliases": {
-        "utilization": {}
-      },
       "properties": {
-        "@timestamp": {
-          "type": "date"
+        "input": {
+          "properties": {
+            "type": {
+              "type": "keyword"
+            }
+          }
         },
         "agent": {
           "properties": {
-            "ephemeral_id": {
-              "type": "keyword"
-            },
             "hostname": {
+              "type": "keyword",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "name": {
               "type": "keyword",
               "fields": {
                 "keyword": {
@@ -63,13 +75,8 @@ PUT _index_template/utilization
             "id": {
               "type": "keyword"
             },
-            "name": {
-              "type": "keyword",
-              "fields": {
-                "keyword": {
-                  "type": "keyword"
-                }
-              }
+            "ephemeral_id": {
+              "type": "keyword"
             },
             "type": {
               "type": "keyword"
@@ -78,29 +85,13 @@ PUT _index_template/utilization
               "type": "keyword"
             }
           }
+        },
+        "@timestamp": {
+          "type": "date"
         },
         "ecs": {
           "properties": {
             "version": {
-              "type": "keyword"
-            }
-          }
-        },
-        "host": {
-          "properties": {
-            "name": {
-              "type": "keyword",
-              "fields": {
-                "keyword": {
-                  "type": "keyword"
-                }
-              }
-            }
-          }
-        },
-        "input": {
-          "properties": {
-            "type": {
               "type": "keyword"
             }
           }
@@ -119,328 +110,51 @@ PUT _index_template/utilization
             }
           }
         },
+        "host": {
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
         "utilization": {
           "properties": {
-            "baseboard": {
+            "summary": {
               "properties": {
-                "asset-tag": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "manufacturer": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "product-name": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "serial-number": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "version": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                }
-              }
-            },
-            "bios": {
-              "properties": {
-                "release-date": {
-                  "type": "date",
-                  "format": "MM/dd/yyyy"
-                },
-                "vendor": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "version": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                }
-              }
-            },
-            "chassis": {
-              "properties": {
-                "asset-tag": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "manufacturer": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "serial-number": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "type": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "version": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                }
-              }
-            },
-            "cpu": {
-              "properties": {
-                "architecture": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "bogomips": {
+                "system-used-pct": {
                   "type": "float"
                 },
-                "byte-order": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "cores-per-socket": {
-                  "type": "integer"
-                },
-                "family": {
-                  "type": "integer"
-                },
-                "flags": {
-                  "type": "keyword"
-                },
-                "gnice-pct": {
+                "cpu-free-pct": {
                   "type": "float"
                 },
-                "guest-pct": {
+                "memory-free-pct": {
                   "type": "float"
                 },
-                "hyperthreaded": {
-                  "type": "boolean"
-                },
-                "hypervisor-vendor": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "idle-pct": {
+                "memory-used-pct": {
                   "type": "float"
                 },
-                "iowait-pct": {
+                "cpu-used-pct": {
                   "type": "float"
                 },
-                "irq-pct": {
+                "system-free-pct": {
                   "type": "float"
-                },
-                "l1d-cache-kb": {
-                  "type": "integer"
-                },
-                "l1i-cache-kb": {
-                  "type": "integer"
-                },
-                "l2-cache-kb": {
-                  "type": "integer"
-                },
-                "l3-cache-kb": {
-                  "type": "integer"
-                },
-                "max-mhz": {
-                  "type": "float"
-                },
-                "mhz": {
-                  "type": "float"
-                },
-                "min-mhz": {
-                  "type": "float"
-                },
-                "model": {
-                  "type": "integer"
-                },
-                "model-name": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "nice-pct": {
-                  "type": "float"
-                },
-                "op-modes": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "sockets": {
-                  "type": "integer"
-                },
-                "soft-pct": {
-                  "type": "float"
-                },
-                "steal-pct": {
-                  "type": "float"
-                },
-                "stepping": {
-                  "type": "integer"
-                },
-                "sys-pct": {
-                  "type": "float"
-                },
-                "threads-per-core": {
-                  "type": "integer"
-                },
-                "total-cores": {
-                  "type": "integer"
-                },
-                "usr-pct": {
-                  "type": "float"
-                },
-                "vcpus": {
-                  "type": "integer"
-                },
-                "vendor-id": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "virtualization": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "virtualization-type": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                }
-              }
-            },
-            "loadavg": {
-              "properties": {
-                "15m": {
-                  "type": "float"
-                },
-                "1m": {
-                  "type": "float"
-                },
-                "5m": {
-                  "type": "float"
-                },
-                "processes": {
-                  "properties": {
-                    "running": {
-                      "type": "integer"
-                    },
-                    "total": {
-                      "type": "integer"
-                    }
-                  }
                 }
               }
             },
             "memory": {
               "properties": {
-                "active-gb": {
-                  "type": "float"
-                },
-                "active-kb": {
-                  "type": "integer"
-                },
-                "available-gb": {
-                  "type": "float"
-                },
-                "available-kb": {
-                  "type": "integer"
-                },
                 "cached-gb": {
                   "type": "float"
                 },
                 "cached-kb": {
                   "type": "integer"
                 },
-                "free-gb": {
-                  "type": "float"
-                },
-                "free-kb": {
-                  "type": "integer"
-                },
-                "inactive-gb": {
-                  "type": "float"
-                },
-                "inactive-kb": {
-                  "type": "integer"
-                },
-                "swap-free-gb": {
+                "available-gb": {
                   "type": "float"
                 },
                 "swap-free-kb": {
@@ -449,63 +163,38 @@ PUT _index_template/utilization
                 "swap-total-gb": {
                   "type": "float"
                 },
+                "active-gb": {
+                  "type": "float"
+                },
+                "available-kb": {
+                  "type": "integer"
+                },
                 "swap-total-kb": {
+                  "type": "integer"
+                },
+                "active-kb": {
+                  "type": "integer"
+                },
+                "inactive-kb": {
                   "type": "integer"
                 },
                 "total-gb": {
                   "type": "float"
                 },
+                "swap-free-gb": {
+                  "type": "float"
+                },
+                "inactive-gb": {
+                  "type": "float"
+                },
                 "total-kb": {
                   "type": "integer"
-                }
-              }
-            },
-            "power": {
-              "properties": {
-                "amps": {
+                },
+                "free-kb": {
+                  "type": "integer"
+                },
+                "free-gb": {
                   "type": "float"
-                },
-                "volts": {
-                  "type": "float"
-                },
-                "watts": {
-                  "type": "float"
-                }
-              }
-            },
-            "processor": {
-              "properties": {
-                "family": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "frequency": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "manufacturer": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "version": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
                 }
               }
             },
@@ -516,31 +205,9 @@ PUT _index_template/utilization
                 }
               }
             },
-            "summary": {
-              "properties": {
-                "cpu-free-pct": {
-                  "type": "float"
-                },
-                "cpu-used-pct": {
-                  "type": "float"
-                },
-                "memory-free-pct": {
-                  "type": "float"
-                },
-                "memory-used-pct": {
-                  "type": "float"
-                },
-                "system-free-pct": {
-                  "type": "float"
-                },
-                "system-used-pct": {
-                  "type": "float"
-                }
-              }
-            },
             "system": {
               "properties": {
-                "manufacturer": {
+                "serial-number": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -549,14 +216,6 @@ PUT _index_template/utilization
                   }
                 },
                 "product-name": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "serial-number": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -579,22 +238,366 @@ PUT _index_template/utilization
                       "type": "keyword"
                     }
                   }
+                },
+                "manufacturer": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                }
+              }
+            },
+            "bios": {
+              "properties": {
+                "release-date": {
+                  "format": "MM/dd/yyyy",
+                  "type": "date"
+                },
+                "vendor": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "version": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                }
+              }
+            },
+            "baseboard": {
+              "properties": {
+                "serial-number": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "asset-tag": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "product-name": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "version": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "manufacturer": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
                 }
               }
             },
             "temperature": {
               "properties": {
-                "package-id-0-c": {
+                "package-id-0-f": {
                   "type": "float"
                 },
-                "package-id-0-f": {
+                "package-id-1-f": {
                   "type": "float"
                 },
                 "package-id-1-c": {
                   "type": "float"
                 },
-                "package-id-1-f": {
+                "package-id-0-c": {
                   "type": "float"
+                }
+              }
+            },
+            "cpu": {
+              "properties": {
+                "vendor-id": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "l3-cache-kb": {
+                  "type": "integer"
+                },
+                "flags": {
+                  "type": "keyword"
+                },
+                "l1d-cache-kb": {
+                  "type": "integer"
+                },
+                "steal-pct": {
+                  "type": "float"
+                },
+                "stepping": {
+                  "type": "integer"
+                },
+                "bogomips": {
+                  "type": "float"
+                },
+                "guest-pct": {
+                  "type": "float"
+                },
+                "idle-pct": {
+                  "type": "float"
+                },
+                "gnice-pct": {
+                  "type": "float"
+                },
+                "threads-per-core": {
+                  "type": "integer"
+                },
+                "model": {
+                  "type": "integer"
+                },
+                "model-name": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "sockets": {
+                  "type": "integer"
+                },
+                "min-mhz": {
+                  "type": "float"
+                },
+                "hyperthreaded": {
+                  "type": "boolean"
+                },
+                "op-modes": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "architecture": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "virtualization": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "byte-order": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "max-mhz": {
+                  "type": "float"
+                },
+                "l2-cache-kb": {
+                  "type": "integer"
+                },
+                "l1i-cache-kb": {
+                  "type": "integer"
+                },
+                "vcpus": {
+                  "type": "integer"
+                },
+                "sys-pct": {
+                  "type": "float"
+                },
+                "total-cores": {
+                  "type": "integer"
+                },
+                "cores-per-socket": {
+                  "type": "integer"
+                },
+                "nice-pct": {
+                  "type": "float"
+                },
+                "iowait-pct": {
+                  "type": "float"
+                },
+                "virtualization-type": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "irq-pct": {
+                  "type": "float"
+                },
+                "usr-pct": {
+                  "type": "float"
+                },
+                "family": {
+                  "type": "integer"
+                },
+                "hypervisor-vendor": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "mhz": {
+                  "type": "float"
+                },
+                "soft-pct": {
+                  "type": "float"
+                }
+              }
+            },
+            "chassis": {
+              "properties": {
+                "serial-number": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "asset-tag": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "version": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "manufacturer": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                }
+              }
+            },
+            "power": {
+              "properties": {
+                "volts": {
+                  "type": "float"
+                },
+                "amps": {
+                  "type": "float"
+                },
+                "watts": {
+                  "type": "float"
+                }
+              }
+            },
+            "loadavg": {
+              "properties": {
+                "processes": {
+                  "properties": {
+                    "running": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "5m": {
+                  "type": "float"
+                },
+                "15m": {
+                  "type": "float"
+                },
+                "1m": {
+                  "type": "float"
+                }
+              }
+            },
+            "processor": {
+              "properties": {
+                "family": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "version": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "frequency": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "manufacturer": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword"
+                    }
+                  }
                 }
               }
             }
@@ -602,6 +605,10 @@ PUT _index_template/utilization
         }
       }
     }
-  }
+  },
+  "index_patterns": [
+    "utilization-*"
+  ],
+  "composed_of": []
 }
 ```

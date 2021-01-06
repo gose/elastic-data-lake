@@ -1,7 +1,10 @@
 input {
-  beats {
-    port => 5044
-  }
+    tcp {
+        port => 4044
+    }
+    beats {
+        port => 5044
+    }
 }
 filter {
     # Raw data filters go here.
@@ -26,7 +29,7 @@ output {
         }
     } else {
         pipeline {
-            send_to => ["dead-letter-archive", "dead-letter-structure"]
+            send_to => ["unknown-archive", "unknown-structure"]
         }
     }
 }

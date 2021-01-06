@@ -1,0 +1,19 @@
+input {
+    pipeline {
+        address => "utilization-structure"
+    }
+}
+filter {
+}
+output {
+    elasticsearch {
+        #
+        # Custom Settings
+        #
+        id => "utilization-structure"
+        index => "utilization"
+        hosts => "${ES_ENDPOINT}"
+        user => "${ES_USERNAME}"
+        password => "${ES_PASSWORD}"
+    }
+}

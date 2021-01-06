@@ -1,0 +1,34 @@
+input {
+    pipeline {
+        address => "utilization-archive"
+    }
+}
+filter {
+}
+output {
+    s3 {
+        #
+        # Custom Settings
+        #
+        prefix => "utilization/${S3_DATE_DIR}"
+        temporary_directory => "${S3_TEMP_DIR}/utilization-archive"
+        access_key_id => "${S3_ACCESS_KEY}"
+        secret_access_key => "${S3_SECRET_KEY}"
+        endpoint => "${S3_ENDPOINT}"
+        bucket => "${S3_BUCKET}"
+        
+        #
+        # Standard Settings
+        #
+        validate_credentials_on_root_bucket => false
+        codec => json_lines
+        # Limit Data Lake file sizes to 5 GB
+        size_file => 5000000000
+        time_file => 1
+        # encoding => "gzip"
+        additional_settings => {
+            force_path_style => true
+            follow_redirects => false
+        }
+    }
+}

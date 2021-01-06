@@ -1,0 +1,28 @@
+input {
+    s3 {
+        #
+        # Custom Settings
+        #
+        prefix => "system-filebeat-module/2021-01-04"
+        temporary_directory => "${S3_TEMP_DIR}/system-filebeat-module-reindex"
+        access_key_id => "${S3_ACCESS_KEY}"
+        secret_access_key => "${S3_SECRET_KEY}"
+        endpoint => "${S3_ENDPOINT}"
+        bucket => "${S3_BUCKET}"
+        
+        #
+        # Standard Settings
+        #
+        watch_for_new_files => false
+        codec => json_lines
+        additional_settings => {
+            force_path_style => true
+            follow_redirects => false
+        }
+    }
+}
+filter {
+}
+output {
+    pipeline { send_to => "system-filebeat-module-structure" }
+}
