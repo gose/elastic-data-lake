@@ -1,3 +1,7 @@
 .DS_Store
 *.swp
+*.bak
+*.orig
 *.dump
+*.keystore
+tmp

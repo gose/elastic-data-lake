@@ -1,0 +1,19 @@
+input {
+    pipeline {
+        address => "co2meter-index"
+    }
+}
+filter {
+}
+output {
+    elasticsearch {
+        #
+        # Custom Settings
+        #
+        id => "co2meter-index"
+        index => "co2meter-%{+YYYY.MM.dd}"
+        hosts => "${ES_ENDPOINT}"
+        user => "${ES_USERNAME}"
+        password => "${ES_PASSWORD}"
+    }
+}
