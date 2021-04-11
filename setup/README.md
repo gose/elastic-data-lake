@@ -1,4 +1,4 @@
-# Data Lake Setup
+# Setup
 
 To build the architecture for the Elastic Data Lake, you'll need
 these components:
@@ -40,7 +40,7 @@ $ export LOGSTASH_KEYSTORE_PASS=mypassword
 $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstash create
 ```
 
-Note:  Store this password somewhere safe.  You will also need to
+**Note:**  Store this password somewhere safe.  You will also need to
 add it to the environment that starts the Logstash process.
 
 We'll use the keystore to fill in variables about our Elasticsearch cluster:
@@ -94,61 +94,51 @@ If Logstash is running on an isolated host, you may set it to:
 /tmp/logstash
 ```
 
-### Dead Letter Queue (DLQ)
+### Ansible Pipeline Management
 
-Enable the Logstash's [Dead Letter Queue](https://www.elastic.co/guide/en/logstash/current/dead-letter-queues.html) behavior.
+We'll configure Logstash using Ansible.  Ansible is a popular software provisioning tool that makes deploying configuration updates to multiple servers a breeze.  If you can SSH into a host, you can use Ansible to push configuration to it.
 
-Add the following configuration to `/etc/logstash/logstash.yml`:
-
-```
-dead_letter_queue.enable: true
-```
-
-In the Logstash pipeline
-[dead-letter-queue-archive.yml](dead-letter-queue-archive.yml), be
-sure to create the necessary directories for each pipeline to
-temporarily store events.  For example:
+Create a directory to hold the Logstash configuration we'll be pushing to each Logstash host.
 
 ```
-$ sudo mkdir -p /tmp/logstash/dead-letter-queue/system-filebeat-module-structure
-$ sudo chown -R logstash.logstash /tmp/logstash/dead-letter-queue
+$ mkdir logstash
+$ vi playbook-logstash.yml 
 ```
 
-### Centralized Pipeline Management
+Add the following content to your Logstash Ansible playbook.
 
-We'll configure Logstash to use Centralized Pipeline Management so
-that we can manage its pipelines from Kibana.  Add the following
-configuration to `/etc/logstash/logstash.yml`:
+**Note:** Replace `node-1` and `node-2` with the names of your Logstash hosts.
 
 ```
-#
-# X-Pack Management
-#
-xpack.management.enabled: true
-xpack.management.pipeline.id:
-  - "distributor"
-  - "dead-letter-archive"
-  - "dead-letter-reindex"
-  - "dead-letter-structure"
-  - "haproxy-filebeat-module-archive"
-  - "haproxy-filebeat-module-reindex"
-  - "haproxy-filebeat-module-structure"
-  - "haproxy-metricbeat-module-archive"
-  - "haproxy-metricbeat-module-reindex"
-  - "haproxy-metricbeat-module-structure"
-  - "system-filebeat-module-archive"
-  - "system-filebeat-module-reindex"
-  - "system-filebeat-module-structure"
-  - "utilization-archive"
-  - "utilization-reindex"
-  - "utilization-structure"
-xpack.management.elasticsearch.username: "${ES_USERNAME}"
-xpack.management.elasticsearch.password: "${ES_PASSWORD}"
-xpack.management.elasticsearch.hosts: ["${ES_ENDPOINT}"]
-```
+---
+- hosts: node-1:node-2
+  become: yes
+  gather_facts: no
 
-You may trim the `pipeline.id` list if you are not going to be
-collecting what's listed.
+  tasks:
+    - name: Copy in pipelines.yml
+      template:
+        src: "pipelines.yml"
+        dest: "/etc/logstash/pipelines.yml"
+        mode: 0644
+
+    - name: Remove existing pipelines
+      file:
+        path: "/etc/logstash/conf.d"
+        state: absent
+
+    - name: Copy in pipelines
+      copy:
+        src: "conf.d"
+        dest: "/etc/logstash/"
+
+    - name: Restart Logstash
+      service:
+        name: logstash
+        state: restarted
+        enabled: true
+
+```
 
 ## Step 2 - HAProxy
 
