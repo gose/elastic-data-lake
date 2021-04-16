@@ -1,7 +1,6 @@
 # Setup
 
-To build the architecture for the Elastic Data Lake, you'll need
-these components:
+To build the architecture for the Elastic Data Lake, you'll need these components:
 
 * Logstash
 * HAProxy (or equivalent)
@@ -14,34 +13,24 @@ Here is the architecture we're building:
 
 ## Prerequisites
 
-This guide depends on you having an S3 store and Elasticsearch
-cluster already running.  We'll use [Elastic Cloud](https://elastic.co)
-to run our Elasticsearch cluster and
-[Minio](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-object-storage-server-using-minio-on-ubuntu-18-04)
-as an S3 data store (or any S3-compliant service).
+This guide depends on you having an S3 store and Elasticsearch cluster already running.  We'll use [Elastic Cloud](https://elastic.co) to run our Elasticsearch cluster and [Minio](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-object-storage-server-using-minio-on-ubuntu-18-04) as an S3 data store (or any S3-compliant service).
 
 ## Step 1 - Logstash
 
-Identify the host you want to run Logstash.  Depending on the volume
-of ingest you anticipate, you may want to run Logstash on multiple
-hosts (or containers).  It scales easily so putting HAProxy in front
-of it (which we'll do next) will make it easy to add more capacity.
+Identify the host you want to run Logstash.  Depending on the volume of ingest you anticipate, you may want to run Logstash on multiple hosts (or containers).  It scales easily so putting HAProxy in front of it (which we'll do next) will make it easy to add more capacity.
 
 Follow these instructions to get Logstash up and running:
 
 [https://www.elastic.co/guide/en/logstash/current/installing-logstash.html](https://www.elastic.co/guide/en/logstash/current/installing-logstash.html)
 
-Next, create a [Logstash
-keystore](https://www.elastic.co/guide/en/logstash/current/keystore.html)
-to store sensitive information and variables:
+Next, create a [Logstash keystore](https://www.elastic.co/guide/en/logstash/current/keystore.html) to store sensitive information and variables:
 
 ```
 $ export LOGSTASH_KEYSTORE_PASS=mypassword
 $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstash create
 ```
 
-**Note:**  Store this password somewhere safe.  You will also need to
-add it to the environment that starts the Logstash process.
+**Note:**  Store this password somewhere safe.  You will also need to add it to the environment that starts the Logstash process.
 
 We'll use the keystore to fill in variables about our Elasticsearch cluster:
 
@@ -51,8 +40,7 @@ $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstas
 $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstash add ES_PASSWORD
 ```
 
-The `ES_ENDPOINT` value should be a full domain with `https` prefix and `:9243` port suffix.
-For example:
+The `ES_ENDPOINT` value should be a full domain with `https` prefix and `:9243` port suffix.  For example:
 
 ```
 https://elasticsearch.my-domain.com:9243
@@ -69,13 +57,7 @@ $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstas
 $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstash add S3_TEMP_DIR
 ```
 
-The `S3_DATE_DIR` variable is used to organize your data into
-`date/time` directories in the Data Lake.  For example,
-`data-source/2021-01-01/13-04` will contain data collected January
-1, 2021 during the minute 1:04PM GMT.  Organizing your data in this
-manner gives you good granularity in terms of identifying what time
-windows you may want to re-index in the future.  It allows you to
-reindex data from a year, month, day, hour, or minute interval.
+The `S3_DATE_DIR` variable is used to organize your data into `date/time` directories in the Data Lake.  For example, `data-source/2021-01-01/13-04` will contain data collected January 1, 2021 during the minute 1:04PM GMT.  Organizing your data in this manner gives you good granularity in terms of identifying what time windows you may want to re-index in the future.  It allows you to reindex data from a year, month, day, hour, or minute interval.
 
 The recommended value for `S3_DATE_DIR` is:
 
@@ -83,10 +65,7 @@ The recommended value for `S3_DATE_DIR` is:
 %{+YYYY}-%{+MM}-%{+dd}/%{+HH}-%{+mm}
 ```
 
-The `S3_TEMP_DIR` variable should point to a directory where Logstash
-can temporarily store events.  Since this directory will contain
-events, you may need to make it secure so that only the Logstash
-process can read it (in addition to write to it).
+The `S3_TEMP_DIR` variable should point to a directory where Logstash can temporarily store events.  Since this directory will contain events, you may need to make it secure so that only the Logstash process can read it (in addition to write to it).
 
 If Logstash is running on an isolated host, you may set it to:
 
@@ -142,8 +121,7 @@ Add the following content to your Logstash Ansible playbook.
 
 ## Step 2 - HAProxy
 
-Identify the host you want to run HAProxy.  Many Linux distributions
-support installation from the standard distribution.
+Identify the host you want to run HAProxy.  Many Linux distributions support installation from the standard distribution.
 
 In Ubuntu, run:
 

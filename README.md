@@ -51,7 +51,7 @@ Archiving data is commonly needed for long-term retention, compliance, and disas
 
 <small>Elasticsearch & Logstash skills required</small>
 
-Indexing your data is a critical step in being able to ask questions about your data.  In this step, we'll mirror the incoming data headed to the Data Lake and send another copy to Elasticsearch.  We'll make sure the index is detecting our data correctly so we can build the right visualizations on top of it.  Often times, we'll use the [Logstash Toolkit](#logstash-toolkit) to improve the data model of the data coming in for a specific data source.  Doing so tees the owner of the next step up nicely.  An [Elastic Cluster](https://www.elastic.co/cloud) is needed for this step.
+Indexing your data is a critical step in being able to ask questions about your data.  In this step, we'll mirror the incoming data headed to the Data Lake and send another copy to Elasticsearch.  We'll make sure the index is detecting our data correctly so we can build the right visualizations on top of it.  Often times, we'll use the [Logstash Toolkit](https://github.com/gose/logstash-toolkit) to improve the data model of the data coming in for a specific data source.  Doing so tees the owner of the next step up nicely.  An [Elastic Cluster](https://www.elastic.co/cloud) is needed for this step.
 
 ### Step 4 - Visualize Data
 
@@ -79,7 +79,7 @@ For example, let's say you want to collect & analyze logs from the popular HAPro
 
 Generally, the assets for each data source follow a particular naming convention.  The goal here is to make it clear what piece is involved in touching a particular data flow.  This naming convention will help you know what data source is being collected, what Logstash Pipeline is processing it, what Index Template is indexing it, what Elasticsearch Index it's stored in, what Data Lake directory it's archived in, and what Elastic Dashboard visualizes it.
 
-To create a Data Source, first read [Structure Your Data](structure-your-data.md), then follow these steps:
+To create a Data Source, follow these steps:
 
 1. Copy the template directory to a directory named after your data source (e.g., my-custom-data):
 
@@ -212,6 +212,8 @@ The ELK Stack uses a "[Schema on Write](https://www.elastic.co/blog/schema-on-wr
 
 ## Logstash Toolkit
 
+*Note:*  The [Logstash Toolkit](https://github.com/gose/logstash-toolkit) is also provided as a standalone repository, making it easy for someone who wants to build Logstash filters, to download the toolkit and iteratively build a filter chain.
+
 Logstash processes data using pipelines.  Logstash pipelines can be built a number of ways.  Below is one method for iteratively building them.  It's outlined in 3 steps:
 
 1. Print events to `stdout` to verify we can read them
@@ -261,13 +263,7 @@ The [Field data types](https://www.elastic.co/guide/en/elasticsearch/reference/c
 
 The [Index Template](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html) is where the Mappings are defined for a given Index in Elasticsearch.  An [Index](https://www.elastic.co/blog/what-is-an-elasticsearch-index) is what Elasticsearch uses to logically store your data.
 
-# Thinking in Elastic
-
-Let's briefly cover how to think about data while working with Elastic.  We'll briefly cover Elastic Terminology and then get into data modeling methodologies.  There's sometimes confusion or differences of opinion regarding a term, so we'll settle on the following definitions for our use here.
-
 ## Elastic Terminology
-
-### General Terms
 
 The high-level terms to be familiar with are:
 
