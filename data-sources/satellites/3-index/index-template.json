@@ -1,0 +1,15 @@
+PUT _index_template/satellites
+{
+  "index_patterns": ["satellites-*"],
+  "template": {
+    "settings": {},
+    "mappings": {
+      "properties": {
+        "location": {
+          "type": "geo_point"
+        }
+      }
+    },
+    "aliases": {}
+  }
+}
