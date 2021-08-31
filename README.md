@@ -130,39 +130,39 @@ In general, even for data sources that produce a few MB per day, we're generatin
 
 ### Archive Names
 
-The long-term archival of the data we're collecting will have the following folder structure.  Each data source has its own directory and data collected for that data source is stored in a subdirectory named after the date it was collected.  This gives us a clean way of seeing what data we collected and when.
+The long-term archival of the data we're collecting will have the following folder structure.  Each data source has its own directory and data collected for that data source is stored in a subdirectory named after the day it was collected and then the hour of the day that it was collected.  This gives us a clean way of seeing what data we collected and when.
 
 ```
 <data-source-name>:
-<day-of-year>/<hour-minute>/	<day-of-year>/<hour-minute>/		<day-of-year>/<hour-minute>/
+<day-of-year>/<hour>		<day-of-year>/<hour>		<day-of-year>/<hour>
 ```
 
 For example:
 
 ```
 NEEDS_CLASSIFIED:
-2020-12-29/00-00		2020-12-29/00-01		2020-12-29/00-02
+2020-12-29/00		2020-12-29/01		2020-12-29/02
 
 authlog:
-2020-12-29/00-00		2020-12-29/00-01		2020-12-29/00-02
+2020-12-29/00		2020-12-29/01		2020-12-29/02
 
 haproxy:
-2020-12-29/00-00		2020-12-29/00-01		2020-12-29/00-02
+2020-12-29/00		2020-12-29/01		2020-12-29/02
 
 my-custom-log:
-2020-12-29/00-00		2020-12-29/00-01		2020-12-29/00-02
+2020-12-29/00		2020-12-29/01		2020-12-29/02
 
 product-catalog:
-2020-12-29/00-00		2020-12-29/01-00		2020-12-29/02-00
+2020-12-29/00		2020-12-29/01		2020-12-29/02
 
 syslog:
-2020-12-29/00-00		2020-12-29/00-01		2020-12-29/00-02
+2020-12-29/00		2020-12-29/01		2020-12-29/02
 
 wikipedia:
-2020-12-29/00-00		2020-12-30/00-00		2020-12-31/00-00
+2020-12-29/00		2020-12-30/01		2020-12-31/02
 ```
 
-Data Sources can be archived at different intervals, with the default being once per minute.  You can adjust this layout structure by modifying the archive pipelines accordingly.
+Data Sources can be archived at different intervals.  In general, each pipeline archiving data should write to its archive every hour.    An hour provides a nice balance between flushing what's in Logstash to your archive relatively often, while not creating a "too many files" burden on the underlying archive file system (many file systems can handle lots of files, it's more the latency involved in recalling them that we want to avoid).  Logstash can use [Persistent Queues](https://www.elastic.co/guide/en/logstash/current/persistent-queues.html) on each pipeline in our [Output Isolator Pattern](https://www.elastic.co/guide/en/logstash/current/pipeline-to-pipeline.html#output-isolator-pattern) to ensure delivery guarantees, in the event of sudden shutdown.
 
 ## Reindexing Data
 
@@ -171,6 +171,8 @@ Reindexing data is a core behavior of this framework.  Having the ability to rei
 Finding the right size of capacity is an exercise in understanding when, where, and how much reindexing you'll be doing.  For example, how fast does the reindex need to happen?  How large is the data set being reindexed?  Is the reindex occuring during peak cluster ingest periods or off hours?  Answers to these questions will guide you towards a cluster size that can sustain your reindexing behaviors.
 
 The bottom line is, a cluster needs capacity to reindex data.  Being able to freely reindex data sets as needed comes with understanding whether capacity will be available.  It is incredibly valuable to have a workflow that allows you to reindex data as needed.  By keeping a fluid notion of indexes in Elastic, we can be more agile with regards to how we think about our data.  Ultimately, it frees us to choose when and where to put our data to receive the benefits offered by the datastore, be it a simple object store or an Elasticsearch store.
+
+For an example of how to reindex your data, see the [Logstash Toolkit](https://github.com/gose/logstash-toolkit) where you'll set your input to `s3`.  The [`weather-station.conf`](https://github.com/gose/logstash-toolkit/blob/main/conf.d/weather-station.conf) pipeline is one such example that demonstrates how you would pull from `s3`, provide a `prefix` for your time window, and then filter and ingest the data into Elasticsearch.
 
 ## Data Modeling
 
