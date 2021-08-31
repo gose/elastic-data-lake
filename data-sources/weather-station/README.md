@@ -146,7 +146,7 @@ output {
         #
         # Custom Settings
         #
-        prefix => "weather-station/${S3_DATE_DIR}"
+        prefix => "weather-station/%{+YYYY}-%{+MM}-%{+dd}/%{+HH}"
         temporary_directory => "${S3_TEMP_DIR}/weather-station-archive"
         access_key_id => "${S3_ACCESS_KEY}"
         secret_access_key => "${S3_SECRET_KEY}"
@@ -160,7 +160,7 @@ output {
         codec => json_lines
         # Limit Data Lake file sizes to 5 GB
         size_file => 5000000000
-        time_file => 1
+        time_file => 60
         # encoding => "gzip"
         additional_settings => {
             force_path_style => true
@@ -201,11 +201,11 @@ Check your cluster's Stack Monitoring to see if we're getting events through the
 
 ![Stack Monitoring](stack-monitoring-1.png)
 
-Check your S3 bucket to see if you're getting data directories created each minute for the current date:
+Check your S3 bucket to see if you're getting data directories created each minute for the current date & hour with data:
 
 <img src="data-lake.png" alt="Data Lake" style="zoom:50%;" align="left"/>
 
-If you see a directories for the current date and hour-minute, then you are successfully archiving data!
+If you see your data being stored, then you are successfully archiving!
 
 ## Step #3 - Index Data
 
