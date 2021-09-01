@@ -218,7 +218,7 @@ output {
 }
 ```
 
-The `filter` chain in this pipeline was built by following the [Building Logstash Filters](2-process/README.md) guide.
+The `filter` chain in this pipeline was built using the [Logstash Toolkit](https://github.com/gose/logstash-toolkit).
 
 ### Archive Pipeline
 

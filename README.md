@@ -68,25 +68,23 @@ This guide takes an opinionated approach about how to lay out your data flows.  
 
 > **definition: Data Source** &mdash; A system or service producing data in a particular format.  The format might be unstructured text in a log file, metrics polled from an API, or business data in CSV format.  The format generally doesn't change over time.  A service could produce multiple data sources (e.g., NGINX has real-time metrics that can be polled and it emits multiple log files;  each of these are different data sources).
 
-The data sources you wish to collect may already have assets in [/data-sources](/data-sources).  If they exist, that's great, you have a nice starting point.  If they aren't, this guide will walk you through creating them.  In general, a data source could also have variations as different needs come into play.
+The data sources you wish to collect may already have assets.  If they exist, that's great, you have a nice starting point.  If they aren't, this guide will walk you through creating them.  In general, a data source could also have variations as different needs come into play.
 
 Below is an example of the variations assets can have for a given data source:
 
 ![](images/data-source-assets.png)
 
-For example, let's say you want to collect & analyze logs from the popular HAProxy service.  There are a few ways to do this and the diagram demonstrates your choices.  You could use the official Elastic module provided in Filebeat.  Or maybe you're running an older version of HAProxy and need to roll your own.  Your first step is to check the [/data-sources](/data-sources) directory.  We want to see if anyone has already done the work and shared what you're trying to do, or if someone has come close.  If so, great, you can try out their work to see if it suits your needs.  If not, you can follow the steps in this guide to collect & parse HAProxy logs to meet your needs.
+For example, let's say you want to collect & analyze logs from the popular HAProxy service.  There are a few ways to do this and the diagram demonstrates your choices.  You could use the official Elastic module provided in Filebeat.  Or maybe you're running an older version of HAProxy and need to roll your own.  Your first step is assets exist for a similar data set.  Maybe someone has already done the work and shared what you're trying to do, or shared something that comes close.  If so, great, you can try out their work to see if it suits your needs.  If not, you can follow the steps in this guide to collect & parse HAProxy logs to meet your needs.
 
-Generally, the assets for each data source follow a particular naming convention.  The goal here is to make it clear what piece is involved in touching a particular data flow.  This naming convention will help you know what data source is being collected, what Logstash Pipeline is processing it, what Index Template is indexing it, what Elasticsearch Index it's stored in, what Data Lake directory it's archived in, and what Elastic Dashboard visualizes it.
+To create a new Data Source, follow these steps:
 
-To create a Data Source, follow these steps:
-
-1. Copy the template directory to a directory named after your data source (e.g., my-custom-data):
+1. Create a new directory, named after your data source:
 
 	```
-	$ cp -r data-sources/template data-sources/my-custom-data
+	$ mkdir my-custom-data
 	```
 
-2. Edit the README.md, filling in each section with the information required for that step:
+2. Create a README.md file with the following sections and details for each step:
 
 	* Title
 	* Step #1 - Collect Data
@@ -97,13 +95,12 @@ To create a Data Source, follow these steps:
 3. Add any assets:
 
 	```
-	my-script.py
-	pipeline-archive.yml
-	pipeline-index.yml
-	index-template.yml
+	logo.png
+	collection-script.py
+	dashboard.png
 	dashboard.ndjson
 	```
-
+	
 4. Open an Issue or submit a Pull Request to have your data source added to this repo.
 
 ## Conventions
