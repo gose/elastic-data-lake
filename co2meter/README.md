@@ -1,6 +1,6 @@
 # CO2 Monitoring
 
-<img src="/Users/gose/elastic/data-lake/co2meter/co2meter.png" alt="satellites" width="300" align="right">
+<img src="co2meter.png" alt="co2meter" width="300" align="right">
 
 The [CO2Mini](https://www.co2meter.com/collections/desktop/products/co2mini-co2-indoor-air-quality-monitor?variant=308811055) is an indoor air quality monitor that displays the CO2 level of the room it's in.  It's often used in home and office settings since it's been shown that elevated CO2 levels can cause [fatigue](https://pubmed.ncbi.nlm.nih.gov/26273786/) and [impair decisions](https://newscenter.lbl.gov/2012/10/17/elevated-indoor-carbon-dioxide-impairs-decision-making-performance/).  The CO2Mini connects to a computer via USB where it can be read programmatically.
 
@@ -274,3 +274,5 @@ Jump back into Kibana:
 3. Click "Import" in the upper right
 
 Congratulations!  You should now be looking at data from your weather station in Elastic.
+
+These graphs can be added to the [Weather Station](../weather-station) data source.
