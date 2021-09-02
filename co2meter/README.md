@@ -4,6 +4,12 @@
 
 The [CO2Mini](https://www.co2meter.com/collections/desktop/products/co2mini-co2-indoor-air-quality-monitor?variant=308811055) is an indoor air quality monitor that displays the CO2 level of the room it's in.  It's often used in home and office settings since it's been shown that elevated CO2 levels can cause [fatigue](https://pubmed.ncbi.nlm.nih.gov/26273786/) and [impair decisions](https://newscenter.lbl.gov/2012/10/17/elevated-indoor-carbon-dioxide-impairs-decision-making-performance/).  The CO2Mini connects to a computer via USB where it can be read programmatically.
 
+In this data source, we'll build the following dashboard with Elastic:
+
+![Dashboard](dashboard.png)
+
+Let's get started!
+
 ## Step #1 - Collect Data
 
 Create a new python script called `~/bin/co2meter.py` with the following contents:
@@ -17,8 +23,8 @@ Take a few minutes to familiarize yourself with the script.  There are a couple 
 With your CO2Mini plugged in, try running the script:
 
 ```bash
-chmod a+x ~/bin/co2monitor.py
-sudo ~/bin/co2monitor.py
+chmod a+x ~/bin/co2meter.py
+sudo ~/bin/co2meter.py
 ```
 
 We'll run our script with `sudo`, but you could add a `udev` rule to give your user permission to `/dev/hidraw0`.
@@ -32,20 +38,20 @@ You should see output on `stdout` similar to:
 Once you confirm the script is working, you can redirect its output to a log file:
 
 ```bash
-sudo touch /var/log/co2monitor.log
-sudo chown ubuntu.ubuntu /var/log/co2monitor.log
+sudo touch /var/log/co2meter.log
+sudo chown ubuntu.ubuntu /var/log/co2meter.log
 ```
 
 Create a logrotate entry so the log file doesn't grow unbounded:
 
 ```bash
-sudo vi /etc/logrotate.d/co2monitor
+sudo vi /etc/logrotate.d/co2meter
 ```
 
 Add the following logrotate content:
 
 ```
-/var/log/co2monitor.log {
+/var/log/co2meter.log {
   weekly
   rotate 12
   compress
@@ -59,13 +65,13 @@ Add the following logrotate content:
 Add the following entry to your crontab with `crontab -e`:
 
 ```
-* * * * * /home/ubuntu/bin/co2monitor.py >> /var/log/co2monitor.log 2>&1
+* * * * * /home/ubuntu/bin/co2meter.py >> /var/log/co2meter.log 2>&1
 ```
 
 Verify output by tailing the log file for a few minutes (since cron is only running the script at the start of each minute):
 
 ```bash
-tail -f /var/log/co2monitor.log
+tail -f /var/log/co2meter.log
 ```
 
 If you're seeing output scroll each minute then you are successfully collecting data!
@@ -74,7 +80,7 @@ If you're seeing output scroll each minute then you are successfully collecting 
 
 Once your data is ready to archive, we'll use Filebeat to send it to Logstash which will in turn sends it to S3.
 
-Add the following to the Filebeat config `/etc/filebeat/filebeat.yml` on the host logging your weather data:
+Add the following to the Filebeat config `/etc/filebeat/filebeat.yml` on the host logging your CO2 data:
 
 ```yaml
 filebeat.inputs:
@@ -99,7 +105,7 @@ You may want to tail syslog to see if Filebeat restarts without any issues:
 tail -f /var/log/syslog | grep filebeat
 ```
 
-At this point, we should have CO2 Monitor data flowing into Logstash.  By default however, our `distributor` pipeline in Logstash will put any unrecognized data in our Data Lake / S3 bucket called `NEEDS_CLASSIFIED`.  To change this, we're going to update the `distributor` pipeline to recognize the weather station data feed.
+At this point, we should have CO2 Meter data flowing into Logstash.  By default however, our `distributor` pipeline in Logstash will put any unrecognized data in our Data Lake / S3 bucket called `NEEDS_CLASSIFIED`.  To change this, we're going to update the `distributor` pipeline to recognize the CO2 Meter data feed.
 
 Add the following conditional to your `distributor.yml` file:
 
@@ -111,12 +117,12 @@ Add the following conditional to your `distributor.yml` file:
 }
 ```
 
-Create a Logstash pipeline called `co2monitor-archive.yml` with the following contents:
+Create a Logstash pipeline called `co2meter-archive.yml` with the following contents:
 
 ```
 input {
     pipeline {
-        address => "co2monitor-archive"
+        address => "co2meter-archive"
     }
 }
 filter {
@@ -126,8 +132,8 @@ output {
         #
         # Custom Settings
         #
-        prefix => "co2monitor/%{+YYYY}-%{+MM}-%{+dd}/%{+HH}"
-        temporary_directory => "${S3_TEMP_DIR}/co2monitor-archive"
+        prefix => "co2meter/%{+YYYY}-%{+MM}-%{+dd}/%{+HH}"
+        temporary_directory => "${S3_TEMP_DIR}/co2meter-archive"
         access_key_id => "${S3_ACCESS_KEY}"
         secret_access_key => "${S3_SECRET_KEY}"
         endpoint => "${S3_ENDPOINT}"
@@ -153,7 +159,7 @@ output {
 Put this pipeline in your Logstash configuration directory so it gets loaded whenever Logstash restarts:
 
 ```bash
-sudo mv co2monitor-archive.yml /etc/logstash/conf.d/
+sudo mv co2meter-archive.yml /etc/logstash/conf.d/
 ```
 
 Add the pipeline to your `/etc/logstash/pipelines.yml` file:
@@ -195,7 +201,7 @@ We'll use Elastic's [Dynamic field mapping](https://www.elastic.co/guide/en/elas
 
 Using the [Logstash Toolkit](http://github.com/gose/logstash-toolkit), the following filter chain has been built that can parse the raw JSON coming in.
 
-Create a new pipeline called `co2monitor-index.yml` with the following content:
+Create a new pipeline called `co2meter-index.yml` with the following content:
 
 ```
 input {
@@ -231,14 +237,14 @@ output {
 Put this pipeline in your Logstash configuration directory so it gets loaded in whenever Logstash restarts:
 
 ```bash
-sudo mv co2monitor-index.yml /etc/logstash/conf.d/
+sudo mv co2meter-index.yml /etc/logstash/conf.d/
 ```
 
 Add the pipeline to your `/etc/logstash/pipelines.yml` file:
 
 ```
-- pipeline.id: "co2monitor-index"
-  path.config: "/etc/logstash/conf.d/co2monitor-index.conf"
+- pipeline.id: "co2meter-index"
+  path.config: "/etc/logstash/conf.d/co2meter-index.conf"
 ```
 
 And finally, restart the Logstash service:
@@ -263,9 +269,7 @@ Check your cluster's Stack Monitoring to see if we're getting events through the
 
 Once Elasticsearch is indexing the data, we want to visualize it in Kibana.
 
-![Dashboard](dashboard.png)
-
-Download this dashboard:  [co2monitor.ndjson](co2monitor.ndjson)
+Download this dashboard:  [co2meter.ndjson](co2meter.ndjson)
 
 Jump back into Kibana:
 
@@ -273,6 +277,10 @@ Jump back into Kibana:
 2. Select "Saved Objects"
 3. Click "Import" in the upper right
 
-Congratulations!  You should now be looking at data from your weather station in Elastic.
+Once it's been imported, click on "CO2 Meter".
+
+Congratulations!  You should now be looking at data from your CO2 Meter in Elastic.
+
+![Dashboard](dashboard.png)
 
 These graphs can be added to the [Weather Station](../weather-station) data source.

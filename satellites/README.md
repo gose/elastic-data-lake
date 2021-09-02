@@ -6,6 +6,12 @@ Often times data we collect will include geospatial information which is worth s
 
 Plotting the location of these satellites involves getting the latest [TLE](https://en.wikipedia.org/wiki/Two-line_element_set) from [Celestrak](http://www.celestrak.com/Norad/elements/table.php?tleFile=starlink&title=Starlink%20Satellites&orbits=0&pointsPerRev=90&frame=1), then using the [Skyfield API](https://rhodesmill.org/skyfield/) to convert the TLE to a Latitude & Longitude by providing a time and date.
 
+After we get the data ingest and indexed, we will use [Elastic Maps](https://www.elastic.co/maps) to plot our data:
+
+![Dashboard](dashboard.png)
+
+Let's get started!
+
 ## Step #1 - Collect Data
 
 Install the following Python module that knows how to convert TLE information into latitude & longitude:

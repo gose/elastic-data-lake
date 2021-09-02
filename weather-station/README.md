@@ -1,8 +1,14 @@
-# Monitoring Weather with Elastic
+# Weather Station
 
-<img src="ws-1550-ip.png" alt="satellites" width="300" align="right">
+<img src="ws-1550-ip.png" alt="weather-station" width="300" align="right">
 
 The [WS-1550-IP](https://ambientweather.com/amws1500.html) from Ambient Weather is a great amatuer weather station.  The station itself is powered by solar with AA battery backup, it's relatively maintenance free, and it's a joy to observe in action.  It communicates with a base station via 915 MHz that requires no setup.  You can also add up to 8 additional sensors to collect temperature from various points within range, all wirelessly.  The base station connects to the Internet via a hard-wired RJ-45 connection on your network, that it uses to upload the data it collects to Ambient Weather's free service.  From there, you can query an [API](https://ambientweather.docs.apiary.io/#) to get your latest, hyper-local, weather.
+
+In this data source, we'll build the following dashboard with Elastic:
+
+![Dashboard](dashboard.png)
+
+Let's get started!
 
 ## Step #1 - Collect Data
 
@@ -351,14 +357,18 @@ Check your cluster's Stack Monitoring to see if we're getting events through the
 
 Once Elasticsearch is indexing the data, we want to visualize it in Kibana.
 
-<img src="dashboard.png" alt="dashboard">
+Download this dashboard:
 
-Download this dashboard:  [weather-station.ndjson](weather-station.ndjson)
+​	[weather-station.ndjson](weather-station.ndjson)
 
-Jump back into Kibana:
+Jump into Kibana:
 
 1. Select "Stack Management" from the menu
 2. Select "Saved Objects"
 3. Click "Import" in the upper right
 
+Once it's been imported, click on "Weather Station".
+
 Congratulations!  You should now be looking at data from your weather station in Elastic.
+
+<img src="dashboard.png" alt="dashboard">
