@@ -3,8 +3,8 @@ input {
         #
         # Custom Settings
         #
-        prefix => "hs300/2021-02-15/15-"
-        #prefix => "hs300/2021-01-29/16-00"
+        prefix => "power-hs300/2021-02-15/15-"
+        #prefix => "power-hs300/2021-01-29/16-00"
         temporary_directory => "${S3_TEMP_DIR}/reindex"
         access_key_id => "${S3_ACCESS_KEY}"
         secret_access_key => "${S3_SECRET_KEY}"
@@ -68,7 +68,7 @@ output {
         codec => dots
     }
     elasticsearch {
-        index => "hs300-%{+YYYY.MM.dd}"
+        index => "power-hs300-%{+YYYY.MM.dd}"
         hosts => "${ES_ENDPOINT}"
         user => "${ES_USERNAME}"
         password => "${ES_PASSWORD}"

@@ -49,7 +49,7 @@ You should see output similar to the following:
 {"class":"VERSION","release":"3.20","rev":"3.20","proto_major":3,"proto_minor":14}
 {"class":"DEVICES","devices":[{"class":"DEVICE","path":"/dev/ttyACM0","driver":"u-blox","subtype":"SW 1.00 (59842),HW 00070000","subtype1":",PROTVER 14.00,GPS;SBAS;GLO;QZSS","activated":"2021-09-02T19:13:12.267Z","flags":1,"native":1,"bps":9600,"parity":"N","stopbits":1,"cycle":1.00,"mincycle":0.25}]}
 {"class":"WATCH","enable":true,"json":true,"nmea":false,"raw":0,"scaled":false,"timing":false,"split24":false,"pps":false}
-{"class":"TPV","device":"/dev/ttyACM0","status":2,"mode":3,"time":"2021-09-02T19:13:13.000Z","leapseconds":18,"ept":0.005,"lat":41.868633156,"lon":-88.057113792,"altHAE":206.865,"altMSL":240.666,"alt":240.666,"track":14.3003,"magtrack":10.5762,"magvar":-3.7,"speed":0.088,"climb":0.010,"eps":0.67,"ecefx":160358.79,"ecefy":-4754122.42,"ecefz":4234974.21,"ecefvx":0.02,"ecefvy":0.05,"ecefvz":0.07,"ecefpAcc":10.77,"ecefvAcc":0.67,"velN":0.085,"velE":0.022,"velD":-0.010,"geoidSep":-33.801}
+{"class":"TPV","device":"/dev/ttyACM0","status":2,"mode":3,"time":"2021-09-02T19:13:13.000Z","leapseconds":18,"ept":0.005,"lat":41.881832,"lon":-87.623177,"altHAE":206.865,"altMSL":240.666,"alt":240.666,"track":14.3003,"magtrack":10.5762,"magvar":-3.7,"speed":0.088,"climb":0.010,"eps":0.67,"ecefx":160358.79,"ecefy":-4754122.42,"ecefz":4234974.21,"ecefvx":0.02,"ecefvy":0.05,"ecefvz":0.07,"ecefpAcc":10.77,"ecefvAcc":0.67,"velN":0.085,"velE":0.022,"velD":-0.010,"geoidSep":-33.801}
  ```
 
 The main thing to look for are the `"class":"TPV"` objects which is are "time-position-velocity" reports.  All of the fields included are described in the document [Core Protocol Responses](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_core_protocol_responses).
@@ -72,7 +72,7 @@ chmod a+x ~/bin/gps.sh
 You should see output on `stdout` similar to:
 
 ```json
-{"class":"TPV","device":"/dev/ttyACM0","status":2,"mode":3,"time":"2021-09-02T19:13:13.000Z","leapseconds":18,"ept":0.005,"lat":41.868633156,"lon":-88.057113792,"altHAE":206.865,"altMSL":240.666,"alt":240.666,"track":14.3003,"magtrack":10.5762,"magvar":-3.7,"speed":0.088,"climb":0.010,"eps":0.67,"ecefx":160358.79,"ecefy":-4754122.42,"ecefz":4234974.21,"ecefvx":0.02,"ecefvy":0.05,"ecefvz":0.07,"ecefpAcc":10.77,"ecefvAcc":0.67,"velN":0.085,"velE":0.022,"velD":-0.010,"geoidSep":-33.801}
+{"class":"TPV","device":"/dev/ttyACM0","status":2,"mode":3,"time":"2021-09-02T19:13:13.000Z","leapseconds":18,"ept":0.005,"lat":41.881832,"lon":-87.623177,"altHAE":206.865,"altMSL":240.666,"alt":240.666,"track":14.3003,"magtrack":10.5762,"magvar":-3.7,"speed":0.088,"climb":0.010,"eps":0.67,"ecefx":160358.79,"ecefy":-4754122.42,"ecefz":4234974.21,"ecefvx":0.02,"ecefvy":0.05,"ecefvz":0.07,"ecefpAcc":10.77,"ecefvAcc":0.67,"velN":0.085,"velE":0.022,"velD":-0.010,"geoidSep":-33.801}
 ```
 
 Once you confirm the script is working, you can redirect its output to a log file:

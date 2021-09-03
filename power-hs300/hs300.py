@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-  
+
 import datetime
 import json
 import subprocess
@@ -19,12 +19,13 @@ def query_power_strip(ip_addr, label, hosts, outlets, time):
         json_output = json.loads(output)
         for i in range(0, 6):
             reading = {}
+            reading["ip"] = ip_addr
+            reading["label"] = label
             reading["outlet"] = i
             reading["name"] = hosts[i]
             reading["volts"] = json_output[f"{i}"]["voltage_mv"] / 1000
             reading["amps"] = json_output[f"{i}"]["current_ma"] / 1000
             reading["watts"] = json_output[f"{i}"]["power_mw"] / 1000
-            reading["label"] = label
             # Record then erase, the stats from the meter only at the top of each hour.
             # This gives us a clean "watts/hour" reading every 1 hour.
             if time.minute == 0:
@@ -34,7 +35,6 @@ def query_power_strip(ip_addr, label, hosts, outlets, time):
             outlets.append(reading)
     except Exception as e:
         print(e)
-
 
 def main():
     # This script is designed to run every minute.
@@ -48,24 +48,34 @@ def main():
     outlets = []
 
     hosts = {
+        0: "node-22",
+        1: "5k-monitor",
+        2: "node-17",
+        3: "node-18",
+        4: "node-21",
+        5: "switch-8"
+    }
+    query_power_strip("192.168.1.81", "desk", hosts, outlets, now)
+
+    hosts = {
         0: "node-1",
         1: "node-2",
         2: "node-3",
         3: "node-0",
-        4: "node-22",
-        5: "node-21"
+        4: "switch-8-poe",
+        5: "udm-pro"
     }
-    query_power_strip("192.168.1.5", "office", hosts, outlets, now)
+    query_power_strip("192.168.1.82", "office", hosts, outlets, now)
 
     hosts = {
-        0: "node-10",
-        1: "node-4",
+        0: "node-9",
+        1: "node-10",
         2: "node-6",
-        3: "node-5",
-        4: "node-9",
+        3: "node-4",
+        4: "node-5",
         5: "node-20"
     }
-    query_power_strip("192.168.1.6", "basement", hosts, outlets, now)
+    query_power_strip("192.168.1.83", "basement", hosts, outlets, now)
 
     power = {
         "@timestamp": now.isoformat(),
