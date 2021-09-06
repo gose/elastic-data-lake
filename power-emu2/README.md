@@ -2,46 +2,7 @@
 
 <img src="emu-2.jpg" alt="EMU-2" width="350" align="right">
 
-The [EMU-2](https://www.rainforestautomation.com/rfa-z105-2-emu-2-2/) by Rainforest Automation displays your smart meter's data in real time.  We'll connect to it via USB and use a Python script to receive its messages, which resemble the following:
-
-```
-{
-  "message": "CurrentSummationDelivered", 
-  "timestamp": "2021-03-15T14:51:07Z",
-  "summation_delivered": 67258253, 
-  "summation_received": 0,
-  "meter_kWh": 67258.253
-}
-{
-  "message": "InstantaneousDemand",
-  "timestamp": "2021-03-15T14:51:19Z",
-  "demand_kW": 1.647
-}
-{
-  "message": "InstantaneousDemand",
-  "timestamp": "2021-03-15T14:51:34Z",
-  "demand_kW": 1.665
-}
-{
-  "message": "InstantaneousDemand",
-  "timestamp": "2021-03-15T14:51:49Z",
-  "demand_kW": 1.638
-}
-{
-  "message": "PriceCluster",
-  "timestamp": "2021-03-15T14:50:33Z",
-  "price_cents_kWh": 5.853,
-  "currency": 840,
-  "tier": 0,
-  "start_time": "2021-03-15T05:00:00Z",
-  "duration": 1440
-}
-```
-
-Decoding the messages from the EMU-2 can be tricky.  There are technical documents to aid the process if you want to dig deeper than the provided Python script:
-
-* [Emu-2-Tech-Guide-1.05.pdf](docs/Emu-2-Tech-Guide-1.05.pdf)
-* [RAVEn. XML API Manual.pdf](docs/RAVEn. XML API Manual.pdf)
+The [EMU-2](https://www.rainforestautomation.com/rfa-z105-2-emu-2-2/) by Rainforest Automation displays your smart meter's data in real time.  We'll connect to it via USB and use a Python script to receive its messages.  The device should output the current demand (kW), current meter reading, and even the current price per kWh.
 
 Our goal is to build the following dashboard:
 
@@ -56,6 +17,11 @@ Create a new python script called `~/bin/power-emu.py` with the following conten
 ​	[power-emu2.py](power-emu2.py)
 
 You might need to adjust the USB port in the script, to match your needs.  Look for `/dev/ttyACM1` in the script.
+
+Decoding the messages from the EMU-2 can be tricky.  There are technical documents to aid the process if you want to dig deeper than the provided Python script:
+
+* [Emu-2-Tech-Guide-1.05.pdf](https://github.com/rainforestautomation/Emu-Serial-API/blob/master/Emu-2-Tech-Guide-1.05.pdf)
+* [RAVEn. XML API Manual.pdf](https://rainforestautomation.com/wp-content/uploads/2014/02/raven_xml_api_r127.pdf)
 
 Try running the script from the command line:
 
@@ -72,6 +38,7 @@ The output will include a JSON-formatted summary of each power outlet's metrics.
 {"message": "InstantaneousDemand", "timestamp": "2021-09-06T07:55:53Z", "demand_kW": 0.585}
 {"message": "InstantaneousDemand", "timestamp": "2021-09-06T07:56:08Z", "demand_kW": 0.63}
 {"message": "CurrentSummationDelivered", "timestamp": "2021-09-06T07:56:11Z", "summation_delivered": 73438571, "summation_received": 0, "meter_kWh": 73438.571}
+{"message": "PriceCluster", "timestamp": "2021-09-06T07:56:51Z", "price_cents_kWh": 5.399, "currency": 840, "tier": 0, "start_time": "2021-09-06T07:50:00Z", "duration": 1440}
 ```
 
 Hit `^c` to quite the script.
