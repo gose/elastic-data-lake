@@ -205,11 +205,11 @@ After a few seconds, you should see Logstash shutdown and start with the new pip
 
 Check your cluster's Stack Monitoring to see if we're getting events through the pipeline:
 
-![Stack Monitoring](stack-monitoring-1.png)
+![Archive](archive.png)
 
 Check your S3 bucket to see if you're getting data directories created each minute for the current date & hour with data:
 
-<img src="data-lake.png" alt="Data Lake" style="zoom:50%;" align="left"/>
+![Minio](minio.png)
 
 If you see your data being stored, then you are successfully archiving!
 
@@ -351,7 +351,7 @@ After a few seconds, you should see Logstash shutdown and start with the new pip
 
 Check your cluster's Stack Monitoring to see if we're getting events through the pipeline:
 
-![Stack Monitoring](stack-monitoring-2.png)
+![Stack Monitoring](index.png)
 
 ## Step #4 - Visualize Data
 
