@@ -57,12 +57,12 @@ $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstas
 $ sudo -E /usr/share/logstash/bin/logstash-keystore --path.settings /etc/logstash add S3_TEMP_DIR
 ```
 
-The `S3_DATE_DIR` variable is used to organize your data into `date/time` directories in the Data Lake.  For example, `data-source/2021-01-01/13-04` will contain data collected January 1, 2021 during the minute 1:04PM GMT.  Organizing your data in this manner gives you good granularity in terms of identifying what time windows you may want to re-index in the future.  It allows you to reindex data from a year, month, day, hour, or minute interval.
+The `S3_DATE_DIR` variable is used to organize your data into `date/time` directories in the Data Lake.  For example, `data-source/2021-01-01/13` will contain data collected January 1, 2021 during the 1PM GMT hour.  Organizing your data in this manner gives you good granularity in terms of identifying what time windows you may want to re-index in the future.  It allows you to reindex data from a year, month, day, or hour interval.  An hour (as opposed to using the hour with minute granularity) provides a nice balance between flushing what's in Logstash to your archive relatively often, while not creating a "too many files" burden on the underlying archive file system.  Many file systems can handle lots of files; it's more the latency involved in recalling them that we want to avoid.
 
 The recommended value for `S3_DATE_DIR` is:
 
 ```
-%{+YYYY}-%{+MM}-%{+dd}/%{+HH}-%{+mm}
+%{+YYYY}-%{+MM}-%{+dd}/%{+HH}
 ```
 
 The `S3_TEMP_DIR` variable should point to a directory where Logstash can temporarily store events.  Since this directory will contain events, you may need to make it secure so that only the Logstash process can read it (in addition to write to it).
